@@ -11,7 +11,7 @@ const Discord = require("discord.js");
 const client = new Discord.Client();
 const config = require('./config.json');
 const mcping = require('mc-ping-updated');
-var on = false;
+var on;
 var status;
 var list;
 
@@ -21,7 +21,7 @@ function update() {
     if (err) {//server is off
       status = "Server Offline";
       client.user.setStatus('dnd');
-      if(!on){
+      if(on){
         client.channels.get(pubChat).send("The Server Is Offline. Did You Break It " + adminID + "?");
       }
       on = false;
@@ -39,7 +39,7 @@ function update() {
       //Green=Online Server
       else{
         client.user.setStatus('online');
-        if(on){
+        if(!on){
           client.channels.get(pubChat).send("The Server Is " + onRole + "!");
         }
         if(res.players.online==1){
