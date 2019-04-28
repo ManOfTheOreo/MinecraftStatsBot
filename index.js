@@ -43,7 +43,7 @@ function update() {
           client.channels.get(pubChat).send("The Server Is " + onRole + "!");
         }
         if(res.players.online==1){
-          status = ' 1 Online Players';
+          status = ' 1 Online Player';
         }
         else{
           status = ' ' + res.players.online + ' Online Players';
