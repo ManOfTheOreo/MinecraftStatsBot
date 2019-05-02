@@ -11,22 +11,27 @@ const Discord = require("discord.js");
 const client = new Discord.Client();
 const config = require('./config.json');
 const mcping = require('mc-ping-updated');
-var on;
+var on = "boot";
 var status;
 var list;
+var count = 0;
 
 //Checks server status (every 5 seconds)
 function update() {
   mcping(mcIP, mcPort, function(err, res) {
     if (err) {//server is off
-      status = "Server Offline";
-      client.user.setStatus('dnd');
-      if(on){
-        client.channels.get(pubChat).send("The Server Is Offline. Did You Break It " + adminID + "?");
+      if(count==3){ //it fails 3 times
+        status = "Server Offline";
+        client.user.setStatus('dnd');
+        if(on=="true"){
+          client.channels.get(pubChat).send("The Server Is Offline. Did You Break It " + adminID + "?");
+        }
+        on = "false";
       }
-      on = false;
+      else count++;
     } 
     else{//server is on
+      count = 0 //reset fail count
       //getting player list
       list = ""
       for(var x in res.players.sample){
@@ -39,7 +44,7 @@ function update() {
       //Green=Online Server
       else{
         client.user.setStatus('online');
-        if(!on){
+        if(on=="false"){
           client.channels.get(pubChat).send("The Server Is " + onRole + "!");
         }
         if(res.players.online==1){
@@ -48,7 +53,7 @@ function update() {
         else{
           status = ' ' + res.players.online + ' Online Players';
         }
-        on = true;
+        on = "true";
       }
     }
     client.user.setActivity(status, {type: 'PLAYING'})
@@ -72,7 +77,7 @@ client.on("message", (message) => {
 //Check Who Is On
 client.on("message", (message =>{
   if(message.content.toLowerCase().startsWith(config.prefix+"list")){
-    if(on){
+    if(on=="true"){
       let output = new Discord.RichEmbed()
       .setTitle("Currently Online:")
       .setDescription(list)
